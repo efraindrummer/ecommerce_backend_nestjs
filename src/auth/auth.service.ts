@@ -5,6 +5,7 @@ import { RegisterUserDto } from './dto/register-auth.dto';
 import { User } from 'src/users/user.entity';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { compare } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -12,10 +13,12 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    private readonly jwtService: JwtService,
   ){}
 
   async register(user: RegisterUserDto) {
-    
+
     await this.checkAndThrowError(this.usersRepository, 'email', user.email, 'El email ya está registrado', HttpStatus.CONFLICT);
     await this.checkAndThrowError(this.usersRepository, 'phone', user.phone, 'El teléfono ya existe', HttpStatus.CONFLICT);
 
@@ -35,7 +38,14 @@ export class AuthService {
       await this.checkAndThrowError(this.usersRepository, 'password', password, 'La contraseña no es correcta', HttpStatus.FORBIDDEN);
     }
 
-    return userFound;
+    const payload = { id: userFound.id, name: userFound.name };
+    const token = this.jwtService.sign(payload);
+    const data = {
+       user: userFound,
+       token: token,
+    }
+
+    return data;
     
   }
 
