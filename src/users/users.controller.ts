@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateUsertDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -31,5 +32,20 @@ export class UsersController {
         @Body() user: UpdateUserDto
     ){
         return this.usersService.update(id, user);
+    }
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file'))
+        uploadFile(
+            @UploadedFile(
+                new ParseFilePipe({
+                    validators: [
+                      new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10}),
+                      new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+                    ],
+                }),
+            ) file: Express.Multer.File,
+        ) {
+        console.log(file);
     }
 }
