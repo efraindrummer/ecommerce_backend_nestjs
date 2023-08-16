@@ -10,6 +10,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     })
   );
-  await app.listen(3000);
+  await app.listen(3000, '172.17.0.1' || 'localhost');
 }
 bootstrap();
