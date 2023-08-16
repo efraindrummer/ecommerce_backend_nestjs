@@ -49,11 +49,11 @@ export class AuthService {
     
   }
 
-  async checkAndThrowError(repository, field, value, errorMessage, httpStatus) {
+  private async checkAndThrowError(repository, field, value, errorMessage, httpStatus) {
+
     const exists = await repository.findOneBy({ [field]: value });
-    if ((httpStatus === HttpStatus.CONFLICT && exists) ||
-        (httpStatus === HttpStatus.NOT_FOUND && !exists) ||
-        (httpStatus === HttpStatus.FORBIDDEN && !exists)) {
+
+    if ((httpStatus === HttpStatus.CONFLICT && exists) || (httpStatus === HttpStatus.NOT_FOUND && !exists) || (httpStatus === HttpStatus.FORBIDDEN && !exists)) {
       throw new HttpException(errorMessage, httpStatus);
     }
   }
