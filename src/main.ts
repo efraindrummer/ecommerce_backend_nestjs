@@ -8,6 +8,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      forbidUnknownValues: false,
     })
   );
   await app.listen(3000, '172.17.0.1' || 'localhost');
