@@ -46,6 +46,6 @@ export class UsersController {
                 }),
             ) file: Express.Multer.File,
         ) {
-        console.log(file);
+        this.usersService.updatedWithImage(file);
     }
 }
