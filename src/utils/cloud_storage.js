@@ -32,7 +32,6 @@ module.exports = (file, pathImage) => {
                         }
                     },
                     resumable: false
-
                 });
 
                 blobStream.on('error', (error) => {

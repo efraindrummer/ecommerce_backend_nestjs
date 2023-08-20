@@ -35,9 +35,22 @@ export class UsersService {
         return this.usersRepository.save(updatedUser);
     }
 
-    async updatedWithImage(file: Express.Multer.File){
+    async updateWithImage(file: Express.Multer.File, id: number, user: UpdateUserDto){
         const url = await storage(file, file.originalname);
-
         console.log('URL ' + url);
+
+        if(url === undefined && url === null){
+            return new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+        const userFound = await this.usersRepository.findOneBy({ id: id });
+
+        if(!userFound){
+            return new HttpException('Usuario no existe', HttpStatus.NOT_FOUND)
+        }
+
+        user.image = url;
+        const updatedUser = Object.assign(userFound, user);
+        return this.usersRepository.save(updatedUser);
     }
 }
