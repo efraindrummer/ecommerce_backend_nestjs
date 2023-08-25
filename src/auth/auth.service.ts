@@ -31,10 +31,13 @@ export class AuthService {
 
     const newUser = this.usersRepository.create(user);
 
-    const rolesIds = user.rolesIds;
-
+    let rolesIds = [];
+    if(user.rolesIds != undefined && user.rolesIds != null){
+      rolesIds = user.rolesIds;
+    }else{
+      rolesIds.push('CLIENT')
+    }
     const roles = await this.rolesRepository.findBy({ id: In(rolesIds)});
-
     newUser.roles = roles;
     
     const userSaved = await this.usersRepository.save(newUser);
