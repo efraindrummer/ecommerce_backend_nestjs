@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { hash } from 'bcrypt';
-import { Role } from '../roles/entities/role.entity';
+import { Rol } from '../roles/entities/role.entity';
 
 @Entity({ name: "users" })
 export class User {
@@ -44,8 +44,8 @@ export class User {
             name: 'id_role'
         }
     })
-    @ManyToMany(() => Role, (role) => role.users)
-    roles: Role[];
+    @ManyToMany(() => Rol, (role) => role.users)
+    roles: Rol[];
 
     @BeforeInsert()
     async hasPassowrd(){

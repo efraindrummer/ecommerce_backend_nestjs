@@ -11,8 +11,7 @@ import storage = require('../utils/cloud_storage');
 export class UsersService {
 
     constructor(
-        @InjectRepository(User) 
-        private readonly usersRepository: Repository<User>
+        @InjectRepository(User) private readonly usersRepository: Repository<User>
     ){}
 
     create(user: CreateUsertDto){

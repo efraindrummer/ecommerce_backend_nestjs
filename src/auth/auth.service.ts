@@ -1,19 +1,26 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+
 import { RegisterUserDto } from './dto/register-auth.dto';
-import { User } from 'src/users/user.entity';
 import { LoginAuthDto } from './dto/login-auth.dto';
+
+import { User } from 'src/users/user.entity';
+import { Rol } from 'src/roles/entities/role.entity';
+
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+  private readonly logger = new Logger('AuthService');
 
+  constructor(
+    @InjectRepository(User) 
+    private readonly usersRepository: Repository<User>,
+    @InjectRepository(Rol) 
+    private readonly rolesRepository: Repository<Rol>,
     private readonly jwtService: JwtService,
   ){}
 
@@ -23,6 +30,13 @@ export class AuthService {
     await this.checkAndThrowError(this.usersRepository, 'phone', user.phone, 'El teléfono ya existe', HttpStatus.CONFLICT);
 
     const newUser = this.usersRepository.create(user);
+
+    const rolesIds = user.rolesIds;
+
+    const roles = await this.rolesRepository.findBy({ id: In(rolesIds)});
+
+    newUser.roles = roles;
+    
     const userSaved = await this.usersRepository.save(newUser);
 
     const payload = { id: userSaved.id, name: userSaved.name };
@@ -51,8 +65,8 @@ export class AuthService {
     const payload = { id: userFound.id, name: userFound.name };
     const token = this.jwtService.sign(payload);
     const data = {
-       user: userFound,
-       token: 'Bearer ' + token,
+      user: userFound,
+      token: 'Bearer ' + token,
     }
 
     delete data.user.password;

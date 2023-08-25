@@ -4,11 +4,11 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
-import { Role } from '../roles/entities/role.entity';
+import { Rol } from '../roles/entities/role.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role])
+    TypeOrmModule.forFeature([User, Rol])
   ],
   providers: [UsersService, JwtStrategy],
   controllers: [UsersController]
