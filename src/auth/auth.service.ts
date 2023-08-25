@@ -53,7 +53,10 @@ export class AuthService {
   async login(loginData: LoginAuthDto){
 
     const {email, password} = loginData;
-    const userFound = await this.usersRepository.findOneBy({ email: email });
+    const userFound = await this.usersRepository.findOne({
+      where: {email: email},
+      relations: ['roles']
+    });
     
     await this.checkAndThrowError(this.usersRepository, 'email', email, 'El email no fue encontrado', HttpStatus.NOT_FOUND);
 
